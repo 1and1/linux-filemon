@@ -139,6 +139,17 @@ int proc_nr_dentry(ctl_table *table, int write, void __user *buffer,
 static void __d_free(struct rcu_head *head)
 {
 	struct dentry *dentry = container_of(head, struct dentry, d_u.d_rcu);
+#ifdef CONFIG_FILEMON
+	int i;
+
+	for (i = 0; i < 2; i++) {
+		struct filemon_info *info = &dentry->d_filemon[i];
+	        if (unlikely(!list_empty(&info->fi_dirty))) {
+			printk("filemon dentry %p not empty at %d\n", dentry, i);
+			return;
+		}
+	}
+#endif
 
 	WARN_ON(!list_empty(&dentry->d_alias));
 	if (dname_external(dentry))
@@ -938,6 +949,8 @@ void shrink_dcache_for_umount(struct super_block *sb)
 	if (down_read_trylock(&sb->s_umount))
 		BUG();
 
+	filemon_killall_dirty(sb);
+
 	dentry = sb->s_root;
 	sb->s_root = NULL;
 	dentry->d_count--;
@@ -1227,6 +1240,19 @@ struct dentry *__d_alloc(struct super_block *sb, const struct qstr *name)
 	INIT_LIST_HEAD(&dentry->d_alias);
 	INIT_LIST_HEAD(&dentry->d_u.d_child);
 	d_set_d_op(dentry, dentry->d_sb->s_d_op);
+#ifdef CONFIG_FILEMON
+	{
+		int i;
+		for(i = 0; i < FILEMON_MAX; i++) {
+			struct filemon_info *info = &dentry->d_filemon[i];
+			INIT_LIST_HEAD(&info->fi_dirty);
+			info->fi_fflags = 0;
+#ifdef CONFIG_FILEMON_COUNTERS
+			memset(info->fi_counter, 0, sizeof(info->fi_counter));
+#endif
+		}
+	}
+#endif
 
 	this_cpu_inc(nr_dentry);
 
@@ -2078,12 +2104,25 @@ static void switch_names(struct dentry *dentry, struct dentry *target)
 			target->d_name.name = dentry->d_name.name;
 			dentry->d_name.name = dentry->d_iname;
 		} else {
+#ifdef CONFIG_FILEMON
 			/*
-			 * Both are internal.  Just copy target to dentry
+			 * Both are internal.
+                         * Make the full exchange because we need to remember
+                         * the old name correctly.
 			 */
+			char tmpname[DNAME_INLINE_LEN];
+			unsigned int tmplen = dentry->d_name.len;
+			memcpy(tmpname, dentry->d_name.name,
+			       tmplen + 1);
+#endif //CONFIG_FILEMON
 			memcpy(dentry->d_iname, target->d_name.name,
 					target->d_name.len + 1);
 			dentry->d_name.len = target->d_name.len;
+#ifdef CONFIG_FILEMON
+			memcpy(target->d_iname, tmpname, 
+			       tmplen + 1);
+			target->d_name.len = tmplen;
+#endif //CONFIG_FILEMON
 			return;
 		}
 	}
@@ -2155,6 +2194,8 @@ static void __d_move(struct dentry * dentry, struct dentry * target)
 	BUG_ON(d_ancestor(dentry, target));
 	BUG_ON(d_ancestor(target, dentry));
 
+	fsnotify_d_move_from(target);
+
 	dentry_lock_for_move(dentry, target);
 
 	write_seqcount_begin(&dentry->d_seq);
@@ -2200,6 +2241,7 @@ static void __d_move(struct dentry * dentry, struct dentry * target)
 	spin_unlock(&target->d_lock);
 	fsnotify_d_move(dentry);
 	spin_unlock(&dentry->d_lock);
+	fsnotify_d_move_to(dentry);
 }
 
 /*

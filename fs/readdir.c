@@ -17,6 +17,7 @@
 #include <linux/security.h>
 #include <linux/syscalls.h>
 #include <linux/unistd.h>
+#include <linux/fsnotify.h>
 
 #include <asm/uaccess.h>
 
@@ -39,6 +40,7 @@ int vfs_readdir(struct file *file, filldir_t filler, void *buf)
 	if (!IS_DEADDIR(inode)) {
 		res = file->f_op->readdir(file, buf, filler);
 		file_accessed(file);
+		fsnotify_readdir(file->f_path.dentry);
 	}
 	mutex_unlock(&inode->i_mutex);
 out:

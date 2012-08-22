@@ -31,6 +31,7 @@
 #include <linux/cn_proc.h>
 #include <linux/getcpu.h>
 #include <linux/task_io_accounting_ops.h>
+#include <linux/filemon.h>
 #include <linux/seccomp.h>
 #include <linux/cpu.h>
 #include <linux/personality.h>
@@ -376,6 +377,7 @@ EXPORT_SYMBOL_GPL(kernel_restart);
 
 static void kernel_shutdown_prepare(enum system_states state)
 {
+	filemon_killall_dirty(NULL);
 	blocking_notifier_call_chain(&reboot_notifier_list,
 		(state == SYSTEM_HALT)?SYS_HALT:SYS_POWER_OFF, NULL);
 	system_state = state;

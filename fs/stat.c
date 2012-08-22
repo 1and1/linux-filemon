@@ -14,6 +14,7 @@
 #include <linux/security.h>
 #include <linux/syscalls.h>
 #include <linux/pagemap.h>
+#include <linux/fsnotify.h>
 
 #include <asm/uaccess.h>
 #include <asm/unistd.h>
@@ -41,6 +42,8 @@ int vfs_getattr(struct vfsmount *mnt, struct dentry *dentry, struct kstat *stat)
 {
 	struct inode *inode = dentry->d_inode;
 	int retval;
+
+	fsnotify_stat(dentry);
 
 	retval = security_inode_getattr(mnt, dentry);
 	if (retval)

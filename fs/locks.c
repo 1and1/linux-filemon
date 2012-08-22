@@ -124,6 +124,7 @@
 #include <linux/slab.h>
 #include <linux/syscalls.h>
 #include <linux/time.h>
+#include <linux/fsnotify.h>
 #include <linux/rcupdate.h>
 #include <linux/pid_namespace.h>
 
@@ -1663,6 +1664,8 @@ SYSCALL_DEFINE2(flock, unsigned int, fd, unsigned int, cmd)
 	if (error)
 		goto out_free;
 
+	fsnotify_flock(filp->f_path.dentry);
+
 	if (filp->f_op && filp->f_op->flock)
 		error = filp->f_op->flock(filp,
 					  (can_sleep) ? F_SETLKW : F_SETLK,
@@ -1801,6 +1804,8 @@ out:
  */
 int vfs_lock_file(struct file *filp, unsigned int cmd, struct file_lock *fl, struct file_lock *conf)
 {
+	fsnotify_plock(filp->f_path.dentry);
+
 	if (filp->f_op && filp->f_op->lock)
 		return filp->f_op->lock(filp, cmd, fl);
 	else
