@@ -10,4 +10,4 @@ Filemonitor vesions:
 
 For more options please visit the [Downloads section](https://github.com/1and1/linux-filemon/downloads).
 
-Filemonitor is Free Software under GNU GPLv2+. Distributed with Linux, the kernel, it can be used under the terms of GNU GPLv2.
+Filemonitor is [Free Software](http://www.gnu.org/philosophy/free-sw.en.html) under GNU GPLv2+. Distributed with Linux, the kernel, it can be used under the terms of GNU GPLv2.
