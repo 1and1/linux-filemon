@@ -11,6 +11,6 @@ Filemonitor versions:
     * commit: [5d55b77](https://github.com/1and1/linux-filemon/commit/5d55b7705f05d5e3dc38e3881a963d2cdc09f3b8) - Filemonitor commit to the Linux 3.2 branch
     * tarball: [linux-3.2.28-filemon-0.1.tar.bz2](https://github.com/downloads/1and1/linux-filemon/linux-3.2.28-filemon-0.1.tar.bz2) - Linux 3.2.28 patched with Filemonitor
 
-For more options please visit the [Downloads section](https://github.com/1and1/linux-filemon/downloads).
+For more options please visit the [Downloads section](https://github.com/1and1/linux-filemon/downloads). For a minimal documentation, please visit the [wiki](https://github.com/1and1/linux-filemon/wiki).
 
 Filemonitor is [Free Software](http://www.gnu.org/philosophy/free-sw.en.html) under GNU GPLv2+. Distributed with Linux, the kernel, it can be used under the terms of GNU GPLv2.
