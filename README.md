@@ -5,8 +5,8 @@ Filemonitor is an experimental Linux patch developed at [1&1 Internet AG](http:/
 
 WARNING! This patch has been designed as EXPERIMENTAL. Its usage is DANGEROUS, because some filesystems could get exhausted by the masses of ORPHAN INODES!
 
-Filemonitor versions:
-* 0.1
+The current version of Filemonitor is 0.1. We provide the patch for the following stable Linux trees:
+* 3.2 (3.2.10)
     * patch: [filemonitor-0.1-linux-3.2.28-201208212028.patch](https://github.com/downloads/1and1/linux-filemon/filemonitor-0.1-linux-3.2.28-201208212028.patch) - initial patch against the stable Linux 3.2 tree
     * commit: [5d55b77](https://github.com/1and1/linux-filemon/commit/5d55b7705f05d5e3dc38e3881a963d2cdc09f3b8) - Filemonitor commit to the Linux 3.2 branch
     * tarball: [linux-3.2.28-filemon-0.1.tar.bz2](https://github.com/downloads/1and1/linux-filemon/linux-3.2.28-filemon-0.1.tar.bz2) - Linux 3.2.28 patched with Filemonitor
