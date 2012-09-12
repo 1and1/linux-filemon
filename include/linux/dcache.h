@@ -9,6 +9,8 @@
 #include <linux/seqlock.h>
 #include <linux/cache.h>
 #include <linux/rcupdate.h>
+#include <linux/time.h>
+#include <linux/filemon_defs.h>
 
 struct nameidata;
 struct path;
@@ -114,6 +116,9 @@ struct dentry {
 	} d_u;
 	struct list_head d_subdirs;	/* our children */
 	struct list_head d_alias;	/* inode alias list */
+#ifdef CONFIG_FILEMON
+	struct filemon_info d_filemon[FILEMON_MAX];
+#endif
 };
 
 /*

@@ -1124,6 +1124,8 @@ static int do_umount(struct mount *mnt, int flags)
 			return -EAGAIN;
 	}
 
+	fsnotify_umount(&mnt->mnt, mnt->mnt_mountpoint, sb);
+
 	/*
 	 * If we may have to abort operations to get out of this
 	 * mount, and they will themselves hold resources we must
@@ -2188,6 +2190,9 @@ long do_mount(char *dev_name, char *dir_name, char *type_page,
 	else
 		retval = do_new_mount(&path, type_page, flags, mnt_flags,
 				      dev_name, data_page);
+
+	if(!retval)
+		fsnotify_mount(path.dentry);
 dput_out:
 	path_put(&path);
 	return retval;
